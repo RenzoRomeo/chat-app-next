@@ -4,6 +4,7 @@ import Link from 'next/link';
 import Router from 'next/router';
 
 import { useAuth } from '../contexts/AuthContext';
+import { saveUserData } from '../database';
 
 const Signup: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(false);
@@ -27,8 +28,10 @@ const Signup: React.FC = () => {
       setError('');
       setLoading(true);
       if (email && password && signup) {
-        await signup(email.value, password.value);
-        Router.push('/');
+        signup(email.value, password.value)
+          .then((userCred) => userCred.user)
+          .then((user) => saveUserData(user))
+          .then(() => Router.push('/'));
       }
     } catch {
       setError('Failed to create account');
