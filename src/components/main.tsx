@@ -20,6 +20,7 @@ const Main: React.FC = () => {
         .catch((err) => console.error(err));
     }
   }, [user]);
+  
 
   return (
     <Stack direction="row" w="100%">

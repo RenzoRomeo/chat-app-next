@@ -20,7 +20,7 @@ const ChatListItem: React.FC<Props> = (props) => {
   }, [otherUserUID]);
 
   return (
-    <Stack direction="row" h="3rem">
+    <Stack direction="row" w="100%" bg="red" p="1rem" align="center">
       <Avatar src={otherUser?.photoURL || ''} />
       <Text>{otherUser?.email}</Text>
     </Stack>
