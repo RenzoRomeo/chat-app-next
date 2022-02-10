@@ -21,7 +21,7 @@ const Main: React.FC = () => {
   }, [user]);
 
   const handleNewChat = () => {
-    // createNewChat().then(chat => setCurrentChat(chat));
+    // createNewChat({originUID: user, destinyUID}).then(chat => setCurrentChat(chat));
   };
 
   return (

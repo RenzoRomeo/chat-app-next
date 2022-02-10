@@ -19,8 +19,28 @@ export const getAllChats = async (user: UserType) => {
   }));
 };
 
-export const createNewChat = () => {
-  
+export const createNewChat = async (uids: {
+  originUID: string;
+  destinyUID: string;
+}) => {
+  const { originUID, destinyUID } = uids;
+
+  const usersRef = collection(db, 'users');
+  const qUsers = query(usersRef, where('uid', '==', destinyUID));
+  const userSnapshot = await getDocs(qUsers);
+  if (userSnapshot.empty) return null;
+
+  const chatsRef = collection(db, 'chats');
+  const qChats = query(chatsRef, where('users', 'array-contains', uids));
+  const chatsSnapshot = await getDocs(qChats);
+  if (chatsSnapshot.empty) {
+    const chatDoc = await addDoc(chatsRef, {
+      users: [originUID, destinyUID],
+      messages: [],
+    });
+    return chatDoc.id;
+  }
+  return null;
 };
 
 export const getAllMessages = async () => {};
