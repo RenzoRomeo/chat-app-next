@@ -3,7 +3,7 @@ import {
   addDoc,
   collection,
   getDocs,
-  setDoc,
+  getDoc,
   query,
   where,
 } from 'firebase/firestore';
@@ -41,6 +41,13 @@ export const createNewChat = async (uids: {
     return chatDoc.id;
   }
   return null;
+};
+
+export const getChatById = async (id: string) => {
+  const chatsRef = collection(db, 'chats');
+  const q = query(chatsRef, where('__name__', '==', id));
+  const chat = await getDocs(q);
+  return chat.docs[0].data();
 };
 
 export const getAllMessages = async () => {};

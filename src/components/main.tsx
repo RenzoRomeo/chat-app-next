@@ -1,7 +1,7 @@
 import { Box, Stack } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
 
-import { getAllChats } from '../database';
+import { getAllChats, getChatById, createNewChat } from '../database';
 import { useAuth } from '../contexts/AuthContext';
 import Header from './header';
 import ChatListItem from './chat-list-item';
@@ -9,7 +9,6 @@ import { DocumentData } from 'firebase/firestore';
 
 const Main: React.FC = () => {
   const user = useAuth()?.user;
-
   const [currentChat, setCurrentChat] = useState<DocumentData>();
   const [chats, setChats] = useState<DocumentData[]>([]);
 
@@ -20,15 +19,22 @@ const Main: React.FC = () => {
         .catch((err) => console.error(err));
   }, [user]);
 
-  const handleNewChat = () => {
-    // createNewChat({originUID: user, destinyUID}).then(chat => setCurrentChat(chat));
+  const handleNewChat = (destinyUID: string) => {
+    createNewChat({ originUID: user!.uid, destinyUID }).then((id) => {
+      if (id) {
+        getChatById(id).then((data: any) => {
+          setCurrentChat(data);
+          setChats([...chats, data]);
+        });
+      }
+    });
   };
 
   return (
     <Stack direction="row" w="100%">
       {user && (
         <Stack direction="column" boxSize="fit-content" h="100%" spacing="0">
-          <Header />
+          <Header newChatHandler={handleNewChat} />
           <Stack direction="column" spacing={0}>
             {chats.map((chat, i) => (
               <Box

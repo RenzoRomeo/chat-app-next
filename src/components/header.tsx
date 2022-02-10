@@ -1,13 +1,21 @@
-import { Avatar, IconButton, Stack, Text } from '@chakra-ui/react';
+import { Avatar, IconButton, Input, Stack, Text } from '@chakra-ui/react';
 import { FiUserX, FiPlusCircle } from 'react-icons/fi';
 import Router from 'next/router';
+import { useState, useRef } from 'react';
 
 import { useAuth } from '../contexts/AuthContext';
 import type { UserType } from '../contexts/AuthContext';
 
-const Header = () => {
+interface Props {
+  newChatHandler: (destinyUID: string) => void;
+}
+
+const Header: React.FC<Props> = ({ newChatHandler }) => {
+  const [showNewInput, setShowNewInput] = useState<boolean>(false);
   const user: UserType = useAuth()!.user;
   const signout = useAuth()!.signout;
+
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const handleSignOut = () => {
     signout()
@@ -17,24 +25,43 @@ const Header = () => {
       .catch((e) => console.error(e));
   };
 
+  const handleSubmit = (e: any) => {
+    if (e.key === 'Enter') {
+      newChatHandler(inputRef!.current!.value);
+    }
+  };
+
   return (
-    <Stack
-      direction="row"
-      p="2rem"
-      align="center"
-      bg="blackAlpha.400"
-      spacing="2rem"
-    >
-      <Stack direction="row" align="center" spacing="1rem">
-        <Avatar src={user?.photoURL || ''} />
-        <Text fontSize="1.2rem">{user?.email}</Text>
+    <Stack direction="column" spacing="0">
+      <Stack
+        direction="row"
+        p="2rem"
+        align="center"
+        bg="blackAlpha.400"
+        spacing="2rem"
+      >
+        <Stack direction="row" align="center" spacing="1rem">
+          <Avatar src={user?.photoURL || ''} />
+          <Text fontSize="1.2rem">{user?.email}</Text>
+        </Stack>
+        <IconButton
+          aria-label="logout"
+          icon={<FiUserX />}
+          onClick={handleSignOut}
+        />
+        <IconButton
+          aria-label="new chat"
+          icon={<FiPlusCircle />}
+          bg={showNewInput ? 'green.700' : 'green.500'}
+          onClick={() => setShowNewInput(!showNewInput)}
+        />
       </Stack>
-      <IconButton
-        aria-label="logout"
-        icon={<FiUserX />}
-        onClick={handleSignOut}
+      <Input
+        ref={inputRef}
+        display={showNewInput ? 'block' : 'none'}
+        placeholder="Insert UID"
+        onKeyPress={handleSubmit}
       />
-      <IconButton aria-label="new chat" icon={<FiPlusCircle />}/>
     </Stack>
   );
 };
