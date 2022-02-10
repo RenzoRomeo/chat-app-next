@@ -1,5 +1,15 @@
 import { db } from './firebase';
-import { addDoc, collection, getDocs, query, where } from 'firebase/firestore';
+import {
+  addDoc,
+  collection,
+  getDocs,
+  query,
+  where,
+  updateDoc,
+  doc,
+  getDoc,
+  Timestamp,
+} from 'firebase/firestore';
 import { UserType } from './contexts/AuthContext';
 
 export const getAllChats = async (user: UserType) => {
@@ -29,7 +39,9 @@ export const createNewChat = async (uids: {
     where('users', 'array-contains', uids.originUID)
   );
   const chatsSnapshot = await getDocs(qChats);
-  const chat = chatsSnapshot.docs.filter(doc => doc.data().users.includes(uids.destinyUID));
+  const chat = chatsSnapshot.docs.filter((doc) =>
+    doc.data().users.includes(uids.destinyUID)
+  );
   if (chat.length === 0) {
     const chatDoc = await addDoc(chatsRef, {
       users: [originUID, destinyUID],
@@ -43,14 +55,35 @@ export const createNewChat = async (uids: {
   };
 };
 
+export const sendMessage = async (
+  chatId: string,
+  senderUid: string,
+  messageContent: string
+) => {
+  const chatsRef = collection(db, 'chats');
+  const chatDocRef = doc(chatsRef, chatId);
+  const chatDoc = (await getDoc(chatDocRef)).data();
+  const prevMessages = chatDoc?.messages;
+  const newMessage = {
+    content: messageContent,
+    timestamp: new Date(),
+    sender: senderUid,
+  };
+  await updateDoc(chatDocRef, {
+    messages: [
+      ...prevMessages,
+      newMessage,
+    ],
+  });
+  return newMessage;
+};
+
 export const getChatById = async (id: string) => {
   const chatsRef = collection(db, 'chats');
   const q = query(chatsRef, where('__name__', '==', id));
   const chat = await getDocs(q);
   return chat.docs[0].data();
 };
-
-export const getAllMessages = async () => {};
 
 export const saveUserData = async (user: UserType) => {
   try {

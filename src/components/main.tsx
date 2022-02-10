@@ -1,10 +1,12 @@
 import { Box, Stack } from '@chakra-ui/react';
 import { useEffect, useState } from 'react';
+import Router from 'next/router';
 
 import { getAllChats, getChatById, createNewChat } from '../database';
 import { useAuth } from '../contexts/AuthContext';
 import Header from './header';
 import ChatListItem from './chat-list-item';
+import Chat from './chat';
 import { DocumentData } from 'firebase/firestore';
 
 const Main: React.FC = () => {
@@ -14,9 +16,15 @@ const Main: React.FC = () => {
   const [chats, setChats] = useState<DocumentData[]>([]);
 
   useEffect(() => {
+    setTimeout(() => {
+      if (!user) Router.push('/login');
+    }, 500);
     if (user)
       getAllChats(user)
-        .then((data) => setChats(data))
+        .then((data) => {
+          setChats(data);
+          setCurrentChat(data[0]);
+        })
         .catch((err) => console.error(err));
   }, [user]);
 
@@ -41,7 +49,7 @@ const Main: React.FC = () => {
   };
 
   return (
-    <Stack direction="row" w="100%">
+    <Stack direction="row" w="100%" spacing={0}>
       {user && (
         <Stack direction="column" boxSize="fit-content" h="100%" spacing="0">
           <Header newChatHandler={handleNewChat} />
@@ -68,6 +76,7 @@ const Main: React.FC = () => {
           </Stack>
         </Stack>
       )}
+      <Chat chat={currentChat} />
     </Stack>
   );
 };
