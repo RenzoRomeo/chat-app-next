@@ -1,12 +1,5 @@
 import { db } from './firebase';
-import {
-  addDoc,
-  collection,
-  getDocs,
-  getDoc,
-  query,
-  where,
-} from 'firebase/firestore';
+import { addDoc, collection, getDocs, query, where } from 'firebase/firestore';
 import { UserType } from './contexts/AuthContext';
 
 export const getAllChats = async (user: UserType) => {
@@ -28,19 +21,26 @@ export const createNewChat = async (uids: {
   const usersRef = collection(db, 'users');
   const qUsers = query(usersRef, where('uid', '==', destinyUID));
   const userSnapshot = await getDocs(qUsers);
-  if (userSnapshot.empty) return null;
+  if (userSnapshot.empty) return { error: "User doesn't exist" };
 
   const chatsRef = collection(db, 'chats');
-  const qChats = query(chatsRef, where('users', 'array-contains', uids));
+  const qChats = query(
+    chatsRef,
+    where('users', 'array-contains', uids.originUID)
+  );
   const chatsSnapshot = await getDocs(qChats);
-  if (chatsSnapshot.empty) {
+  const chat = chatsSnapshot.docs.filter(doc => doc.data().users.includes(uids.destinyUID));
+  if (chat.length === 0) {
     const chatDoc = await addDoc(chatsRef, {
       users: [originUID, destinyUID],
       messages: [],
     });
-    return chatDoc.id;
+    return { newChatId: chatDoc.id };
   }
-  return null;
+  return {
+    error: 'A chat already exists with that user',
+    exisingChatID: chatsSnapshot.docs[0].id,
+  };
 };
 
 export const getChatById = async (id: string) => {

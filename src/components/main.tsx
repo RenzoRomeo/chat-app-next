@@ -9,6 +9,7 @@ import { DocumentData } from 'firebase/firestore';
 
 const Main: React.FC = () => {
   const user = useAuth()?.user;
+  const [error, setError] = useState<string>('');
   const [currentChat, setCurrentChat] = useState<DocumentData>();
   const [chats, setChats] = useState<DocumentData[]>([]);
 
@@ -19,15 +20,24 @@ const Main: React.FC = () => {
         .catch((err) => console.error(err));
   }, [user]);
 
+  useEffect(() => {
+    if (error !== '') console.error(error);
+  }, [error]);
+
   const handleNewChat = (destinyUID: string) => {
-    createNewChat({ originUID: user!.uid, destinyUID }).then((id) => {
-      if (id) {
-        getChatById(id).then((data: any) => {
-          setCurrentChat(data);
-          setChats([...chats, data]);
-        });
+    createNewChat({ originUID: user!.uid, destinyUID }).then(
+      (newChatData: any) => {
+        const { error, newChatId, existingChatID } = newChatData;
+        if (error || existingChatID) {
+          setError(error);
+        } else {
+          getChatById(newChatId).then((data: any) => {
+            setCurrentChat(data);
+            setChats([...chats, data]);
+          });
+        }
       }
-    });
+    );
   };
 
   return (
@@ -50,7 +60,7 @@ const Main: React.FC = () => {
               >
                 <ChatListItem
                   otherUserUID={
-                    chat.users.filter((uid: string) => uid !== user?.uid)[0]
+                    Object.values(chat.users).filter((uid: string) => uid !== user?.uid)[0]
                   }
                 />
               </Box>

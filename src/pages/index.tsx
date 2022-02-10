@@ -20,11 +20,3 @@ const Home: NextPage<Props> = (props) => {
 };
 
 export default Home;
-
-/* export async function getServerSideProps() {
-  const chats = await getAllChats();
-
-  return {
-    props: { chats },
-  };
-} */
