@@ -3,7 +3,7 @@ import {
   addDoc,
   collection,
   getDocs,
-  getDoc,
+  setDoc,
   query,
   where,
 } from 'firebase/firestore';
@@ -13,7 +13,14 @@ export const getAllChats = async (user: UserType) => {
   const chatsRef = collection(db, 'chats');
   const q = query(chatsRef, where('users', 'array-contains', user?.uid));
   const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map((doc) => doc.data());
+  return querySnapshot.docs.map((doc) => ({
+    ...doc.data(),
+    id: doc.id,
+  }));
+};
+
+export const createNewChat = () => {
+  
 };
 
 export const getAllMessages = async () => {};

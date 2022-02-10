@@ -12,7 +12,7 @@ const Header = () => {
   const handleSignOut = () => {
     signout()
       .then(() => {
-        Router.push('/');
+        Router.push('/login');
       })
       .catch((e) => console.error(e));
   };
