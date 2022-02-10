@@ -60,7 +60,7 @@ const Main: React.FC = () => {
               >
                 <ChatListItem
                   otherUserUID={
-                    Object.values(chat.users).filter((uid: string) => uid !== user?.uid)[0]
+                    chat.users.filter((uid: string) => uid !== user?.uid)[0]
                   }
                 />
               </Box>
