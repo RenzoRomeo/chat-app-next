@@ -14,7 +14,11 @@ const Signup: React.FC = () => {
   const passwordConfirmRef = useRef<HTMLInputElement>(null);
   const signup = useAuth()?.signup;
 
-  const handleSubmit = async (e: React.MouseEvent) => {
+  const handleSubmit = async (
+    e:
+      | React.MouseEvent<HTMLButtonElement>
+      | React.KeyboardEvent<HTMLInputElement>
+  ) => {
     e.preventDefault();
 
     const email = emailRef.current;
@@ -70,6 +74,9 @@ const Signup: React.FC = () => {
             type="password"
             placeholder="Password Confirmation"
             ref={passwordConfirmRef}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') handleSubmit(e);
+            }}
           />
           <Button disabled={loading} onClick={handleSubmit}>
             Sign Up

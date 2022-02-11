@@ -8,7 +8,6 @@ import {
   updateDoc,
   doc,
   getDoc,
-  Timestamp,
 } from 'firebase/firestore';
 import { UserType } from './contexts/AuthContext';
 

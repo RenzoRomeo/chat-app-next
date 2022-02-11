@@ -1,4 +1,4 @@
-import { Avatar, Stack, Text } from '@chakra-ui/react';
+import { Avatar, Box, Stack, Text, Spinner } from '@chakra-ui/react';
 import { DocumentData } from 'firebase/firestore';
 import { useEffect, useState } from 'react';
 
@@ -27,8 +27,14 @@ const ChatListItem: React.FC<Props> = (props) => {
       align="center"
       _hover={{ bg: 'blackAlpha.500' }}
     >
-      <Avatar src={otherUser?.photoURL || ''} />
-      <Text fontSize="1.5rem">{otherUser?.email}</Text>
+      {otherUser ? (
+        <Stack direction="row" align="center" spacing="1rem">
+          <Avatar src={otherUser?.photoURL || ''} />
+          <Text fontSize="1.5rem">{otherUser?.email}</Text>
+        </Stack>
+      ) : (
+        <Spinner />
+      )}
     </Stack>
   );
 };

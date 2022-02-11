@@ -12,7 +12,11 @@ const Login: React.FC = () => {
   const passwordRef = useRef<HTMLInputElement>(null);
   const login = useAuth()?.login;
 
-  const handleSubmit = async (e: React.MouseEvent) => {
+  const handleSubmit = async (
+    e:
+      | React.MouseEvent<HTMLButtonElement>
+      | React.KeyboardEvent<HTMLInputElement>
+  ) => {
     e.preventDefault();
 
     const email = emailRef.current;
@@ -57,7 +61,14 @@ const Login: React.FC = () => {
         )}
         <Stack direction="column" spacing="2rem">
           <Input placeholder="Email" ref={emailRef} />
-          <Input type="password" placeholder="Password" ref={passwordRef} />
+          <Input
+            type="password"
+            placeholder="Password"
+            ref={passwordRef}
+            onKeyPress={(e) => {
+              if (e.key === 'Enter') handleSubmit(e);
+            }}
+          />
           <Button disabled={loading} onClick={handleSubmit}>
             Log In
           </Button>
