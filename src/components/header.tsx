@@ -42,7 +42,12 @@ const Header: React.FC<Props> = ({ newChatHandler }) => {
       >
         <Stack direction="row" align="center" spacing="1rem">
           <Avatar src={user?.photoURL || ''} />
-          <Text fontSize="1.2rem">{user?.email}</Text>
+          <Stack>
+            <Text fontSize="1.2rem">{user?.email}</Text>
+            <Text fontSize="1rem" color="gray.400">
+              {user!.uid}
+            </Text>
+          </Stack>
         </Stack>
         <IconButton
           aria-label="logout"
