@@ -52,7 +52,7 @@ const Chat: React.FC<Props> = ({ chat }) => {
   };
 
   useEffect(() => {
-    const socketioURL = process.env.SOCKETIO_BACKEND as string;
+    const socketioURL = process.env.NEXT_PUBLIC_SOCKETIO_BACKEND as string;
     const ioClient = connect(socketioURL, {
       query: {
         user: user?.uid,
